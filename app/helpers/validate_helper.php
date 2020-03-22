@@ -17,6 +17,23 @@ class  ValInput {
 	}
 	}
 
+	static function phonenumber ( $phonenumber) {
+		$phoneNumbeRegExp = '/^\d{6,14}$/';
+		return  preg_match( $phoneNumbeRegExp, $phonenumber ); 
+	}
+
+	static function hetu ( $hetu) {
+		$hetuRegExp = '/^(0[1-9]|[12]\d|3[01])(0[1-9]|1[0-2])([5-9]\d\+|\d\d-|[01]\dA)\d{3}[\dABCDEFHJKLMNPRSTUVWXY]$/'; 
+		return  preg_match( $hetuRegExp, $hetu ); 
+	}
+
+	static function date($date, $format = 'Y-m-d'){
+		
+		$d = DateTime::createFromFormat($format, $date);
+    // return date if Datetime class return date other return false 
+    return $d && $d->format($format) === $date;
+}
+
 	static function str($val, $min = '', $max = '') {
 
 		if (!is_string($val)) {

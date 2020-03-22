@@ -7,8 +7,8 @@
 
 class Core {
   
-  protected $currentController = 'Pages'; 
-  protected $currentMethod = 'index'; 
+  protected $currentController = 'Users'; 
+  protected $currentMethod = 'login'; 
   protected $params = []; 
 
   public function __construct () {
