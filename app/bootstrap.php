@@ -1,14 +1,10 @@
 <?php 
 
-// Load PHPmailer
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
-
 // Load Composer's autoloader
 
-require 'vendor/autoload.php';
+require_once 'vendor/autoload.php';
+
+// Load PHPmailer
 
 
 // Load config 
@@ -18,6 +14,7 @@ require_once 'config/config.php';
 require_once 'helpers/url_helper.php'; 
 require_once 'helpers/session_helper.php'; 
 require_once 'helpers/validate_helper.php'; 
+require_once 'helpers/notification_helper.php'; 
 
 // Setup cuurent timezone
 

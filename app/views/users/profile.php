@@ -4,6 +4,7 @@
       <div class="card card-body bg-light mt-5">
         <h2>User profile</h2>
         <p>Please fill out this profile form</p>
+        <?php flash('user_message'); ?>
         <form action="<?php echo URLROOT?>/users/profile" method="POST">
           <div class="form-row">
             <div class="form-group col-md">
@@ -56,17 +57,16 @@
           
           <div class="form-row">
             <div class="form-group col-md">
-              <label for="role">Role:</label>
+              <label for="user_role">Role:</label>
               <select 
                 class="form-control form-control-lg  <?php echo (!empty($data['role_err'])) ? 'is-invalid' : ''; ?>"
-                name="role"
-                id="exampleFormControlSelect1"
+                name="user_role"
               >
-                <option value="admin" <?php echo ($data['role'] == 'admnin') ? 'selected' : '' ?>>admin</option>
-                <option value="driver" <?php echo ($data['role'] == 'driver') ? 'selected' : '' ?>>driver</option>
-                <option value="tenant" <?php echo ($data['role'] == 'tenant') ? 'selected' : '' ?>>tenant</option>1
+                <option value="admin" <?php echo ($data['user_role'] == 'admnin') ? 'selected' : '' ; ?>>admin</option>
+                <option value="driver" <?php echo ($data['user_role'] == 'driver') ? 'selected' : ''; ?>>driver</option>
+                <option value="tenant" <?php echo ($data['user_role'] == 'tenant') ? 'selected' : ''; ?>>tenant</option>
               </select>
-              <span class="invalid-feedback"><?php echo $data['role_err']?></span>
+              <span class="invalid-feedback"><?php echo $data['user_role_err']?></span>
             </div>
 
 

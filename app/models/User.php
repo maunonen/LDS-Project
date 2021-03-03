@@ -23,6 +23,35 @@ class User {
     }
   }
 
+  public function updateProfile( $data) {
+
+    // Bind values
+    $sqlQuery= 'UPDATE users SET 
+                                first_name = :first_name, last_name = :last_name, email = :email, 
+                                user_role = :user_role, username = :username, phone_number = :phone_number, 
+                                personal_id = :personal_id, dl_issued_date = :dl_issued_date, dl_expire_date = :dl_expire_date 
+                WHERE user_id = :user_id'; 
+    // bind params
+    $this->db->query($sqlQuery); 
+    $this->db->bind(':user_id', $_SESSION['user_id']);  
+    $this->db->bind(':first_name', $data['first_name']);
+    $this->db->bind(':last_name', $data['last_name']); 
+    $this->db->bind(':email', $data['email']); 
+    $this->db->bind(':user_role', $data['user_role']); 
+    $this->db->bind(':username', $data['username']); 
+    $this->db->bind(':phone_number', $data['phone_number']); 
+    $this->db->bind(':personal_id', $data['personal_id']); 
+    $this->db->bind(':dl_issued_date', $data['dl_issued_date']); 
+    $this->db->bind(':dl_expire_date', $data['dl_expire_date']);  
+    
+    // Execute  
+    if( $this->db->execute()){
+      return true; 
+    } else {
+      return false; 
+    }
+  }
+
   public function login ( $email, $password) {
     $this->db->query('SELECT * FROM users WHERE email = :email'); 
     $this->db->bind(':email', $email); 

@@ -5,6 +5,10 @@ class Users extends Controller {
     $this->userModel = $this->model('User'); 
   }
 
+  public function index () {
+
+  }
+
   public function register() {
     
     
@@ -67,8 +71,23 @@ class Users extends Controller {
         // Register user
         if ($this->userModel->register($data)){
           // redirect 
-          flash('register_success', 'You are registered and can log in'); 
-          sendNotification( "New user has been created", "Alexander", "santari33@gmail.com", "<h1>New film has been added to DB</h1>", "New film has been added to DB"); 
+          flash('register_success', 'You are registered and can log in now'); 
+          $notificationMessage =  "<div> 
+                                    <h1>Dear ". $data['username'] ."Welcome to LDS project</h1>
+                                    <p>Congratulations you have been succefully regiesterdd in <strong>LDS project</strong></p>
+                                    <br>
+                                    <p>Best regards</p>
+                                    <p>LDS Project</p>
+                                  </div>"; 
+          $notificationAltBody = "Dear ". $data['username'] ."Welcome to LDS project/n".
+                                 "Congratulations you have been succefully regiesterdd inLDS project/n".
+                                  "/n".
+                                  "Best regards/n".
+                                  "LDS Project" ; 
+          $notificationSubject = "LDS registration" . $data['username'];
+          $notificationEmail = $data['email']; 
+          $notificationUsername = $data['username']; 
+          sendNotification( $notificationSubject, $notificationUsername, $notificationEmail, $notificationMessage, $notificationAltBody); 
           redirect('users/login');
         } else {
           die('Something went wrong') ;
@@ -184,9 +203,9 @@ class Users extends Controller {
         'first_name' => strip_tags(trim( $_POST['first_name'])), 
         'last_name' =>  strip_tags (trim( $_POST['last_name'])), 
         'email' => strip_tags (trim($_POST['email'])), 
-        'role' => strip_tags(trim( $_POST['role'])), 
+        'user_role' => strip_tags(trim( $_POST['user_role'])), 
         'username' => strip_tags(trim( $_POST['username'])), 
-        'phone_number' => (string)strip_tags(trim( $_POST['phone_number'])), 
+        'phone_number' => strip_tags(trim( $_POST['phone_number'])), 
         'personal_id' => strip_tags(trim( $_POST['personal_id'])), 
         'dl_issued_date' =>  strip_tags($_POST['dl_issued_date']), 
         'dl_expire_date' => strip_tags($_POST['dl_expire_date'])
@@ -222,10 +241,10 @@ class Users extends Controller {
         }
       }
       // validate role 
-      if ( empty( $data['role'])) {
-        $data['role_err'] = 'Please enter role'; 
-      } elseif ( strlen($data['role']) > 20) {
-        $data['role_err'] = 'Role must be less then 20 character'; 
+      if ( empty( $data['user_role'])) {
+        $data['user_role_err'] = 'Please enter role'; 
+      } elseif ( strlen($data['user_role']) > 20) {
+        $data['user_role_err'] = 'Role must be less then 20 character'; 
       }
       // validate username 
       if ( empty( $data['username'])) {
@@ -291,15 +310,19 @@ class Users extends Controller {
 
       if ( 
           empty( $data['first_name_err']) && empty( $data['last_name_err']) &&
-          empty( $data['email_err']) && empty( $data['role_err']) &&
+          empty( $data['email_err']) && empty( $data['user_role_err']) &&
           empty( $data['username_err']) && empty( $data['phone_number_err']) &&
           empty( $data['personal_id_err']) && empty( $data['dl_issued_date_err']) &&
           empty( $data['dl_expire_date_err'])
         ) {
           
-          if( $this->postModel->addPost( $data )) {
+          if( $this->userModel->updateProfile( $data )) {
+            //die("Success"); 
+          
+            redirect('users/profile'); 
             flash('user_message', 'User profile data updated'); 
-            die('Success'); 
+            
+            
         } else {
           die('Some went wrong'); 
         }
@@ -312,29 +335,32 @@ class Users extends Controller {
       // Checking validation error 
 
     } else {
+
+      $userProfile = $this->userModel->getUserById($_SESSION['user_id']); 
       $data = [
         // Data
-        'first_name' => '', 
-        'last_name' => '', 
-        'email' => $_SESSION['user_email'] ? $_SESSION['user_email'] : '', 
-        'role' => '', 
-        'username' => $_SESSION['user_name'] ? $_SESSION['user_name'] : '', 
-        'phone_number' => '', 
-        'personal_id' => '', 
-        'dl_issued_date' =>  '', 
-        'dl_expire_date' => '', 
+        'first_name' => ($userProfile->first_name) ? $userProfile->first_name : '', 
+        'last_name' => ($userProfile->last_name) ? $userProfile->last_name : '', 
+        'email' => ($userProfile->email) ? $userProfile->email : '', 
+        'user_role' => ($userProfile->user_role) ? $userProfile->user_role : '', 
+        'username' => ($userProfile->username) ? $userProfile->username : '', 
+        'phone_number' => ($userProfile->phone_number) ? $userProfile->phone_number : '', 
+        'personal_id' => ($userProfile->personal_id) ? $userProfile->personal_id : '', 
+        'dl_issued_date' =>  ($userProfile->dl_issued_date) ?  substr ($userProfile->dl_issued_date , 0, 10)  : '', 
+        'dl_expire_date' => ($userProfile->dl_expire_date) ? substr($userProfile->dl_expire_date, 0, 10) : '', 
         // Erros
         'first_name_err' => '', 
-        'last_name_err' => '', 
+        'last_name_err' =>  '', 
         'email_err' => '', 
-        'role_err' => '', 
-        'username_err' => '', 
+        'user_role_err' =>  '', 
+        'username_err' =>  '', 
         'phone_number_err' => '', 
-        'personal_id_err' => '', 
-        'dl_issued_date_err' =>  '', 
-        'dl_expire_date_err' => ''
+        'personal_id_err' =>  '', 
+        'dl_issued_date_err' =>   '', 
+        'dl_expire_date_err' => '', 
         
       ]; 
+      //flash('user_message', 'User profile data updated'); 
       $this->view('users/profile', $data); 
     }
   } 
@@ -350,6 +376,7 @@ class Users extends Controller {
     unset($_SESSION['user_id']); 
     unset($_SESSION['user_email']); 
     unset($_SESSION['user_name']); 
+    unset($_SESSION['user_role']); 
     session_destroy(); 
     redirect('users/login'); 
   }
